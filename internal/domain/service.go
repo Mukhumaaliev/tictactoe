@@ -1,7 +1,10 @@
 package domain
 
+type Service struct {
+}
+
 type GameService interface {
 	FindBestMove(board Board) (int, int)
-	IsValidMove(board Board, row int, col int) bool
+	IsValidBoard(oldBoard Board, newBoard Board) (bool, error)
 	IsFinished(board Board) bool
 }

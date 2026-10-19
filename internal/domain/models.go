@@ -13,8 +13,8 @@ const (
 type Board [3][3]Cell
 
 type Game struct {
-	uuid   uuid.UUID
-	board  Board
+	UUID   uuid.UUID
+	Board  Board
 	Status GameStatus
 }
 
@@ -23,13 +23,14 @@ type GameStatus int
 const (
 	GameStatusInProgress GameStatus = iota
 	GameStatusDraw
-	GameStatusWon
+	GameStatusPlayerWon
+	GameStatusRobotWon
 )
 
 func NewGame() *Game {
 	return &Game{
-		uuid:   uuid.New(),
-		board:  Board{},
+		UUID:   uuid.New(),
+		Board:  Board{},
 		Status: GameStatusInProgress,
 	}
 }
