@@ -17,7 +17,7 @@ type GameRepository interface {
 	Get(uuid uuid.UUID) (*Game, error)
 }
 
-func NewService(repository GameRepository) *Service {
+func NewService(repository GameRepository) GameService {
 	return &Service{
 		repository: repository,
 	}
