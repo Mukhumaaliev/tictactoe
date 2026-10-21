@@ -13,6 +13,12 @@ type GameService interface {
 }
 
 type GameRepository interface {
-	Save(g Game)
-	Get(uuid uuid.UUID) (Game, error)
+	Save(g *Game)
+	Get(uuid uuid.UUID) (*Game, error)
+}
+
+func NewService(repository GameRepository) *Service {
+	return &Service{
+		repository: repository,
+	}
 }

@@ -13,15 +13,15 @@ func NewStorage() *Storage {
 	return &Storage{}
 }
 
-func (s *Storage) saveGame(g Game) {
+func (s *Storage) saveGame(g *Game) {
 	s.games.Store(g.UUID, g)
 }
 
-func (s *Storage) getGame(uuid string) (Game, error) {
+func (s *Storage) getGame(uuid string) (*Game, error) {
 	val, ok := s.games.Load(uuid)
 	if !ok {
-		return Game{}, errors.New("Игры с таким айди не существует!")
+		return &Game{}, errors.New("Игры с таким айди не существует!")
 	}
-	game := val.(Game)
+	game := val.(*Game)
 	return game, nil
 }

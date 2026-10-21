@@ -2,7 +2,7 @@ package domain
 
 import "errors"
 
-func UpdateGameStatus(game *Game) GameStatus {
+func UpdateGameStatus(game *Game) {
 	if checkWin(game.Board, CellX) {
 		game.Status = GameStatusPlayerWon
 	}
@@ -12,7 +12,6 @@ func UpdateGameStatus(game *Game) GameStatus {
 	if isBoardFull(game.Board) {
 		game.Status = GameStatusDraw
 	}
-	return game.Status
 }
 
 func isValidMove(board Board, row int, col int) bool {
@@ -56,7 +55,6 @@ func (s *Service) IsFinished(board Board) bool {
 
 func checkWin(board Board, player Cell) bool {
 	if board[0][0] == player && board[1][1] == player && board[2][2] == player || board[0][2] == player && board[1][1] == player && board[2][0] == player {
-
 		return true
 	}
 	for i := 0; i < 3; i++ {
