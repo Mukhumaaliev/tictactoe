@@ -2,55 +2,50 @@ package domain
 
 import "errors"
 
-func UpdateGameStatus(game *Game) {
+func updateGameStatus(game *Game) {
 	if checkWin(game.Board, CellX) {
 		game.Status = GameStatusPlayerWon
+		return
 	}
 	if checkWin(game.Board, CellO) {
 		game.Status = GameStatusRobotWon
+		return
 	}
 	if isBoardFull(game.Board) {
 		game.Status = GameStatusDraw
 	}
 }
 
-func isValidMove(board Board, row int, col int) bool {
-	if board[row][col] != CellEmpty {
-		return false
-	}
-	return true
-}
+func isValidBoard(oldBoard Board, newBoard Board) error {
+	var diffCount int
 
-func (s *Service) IsValidBoard(oldBoard Board, newBoard Board) (bool, error) {
-	if oldBoard == newBoard {
-		return false, errors.New("Вы не сделали ход: доска не изменилась")
-	}
-	isEdited := false
 	for i := 0; i < 3; i++ {
 		for j := 0; j < 3; j++ {
-			if oldBoard[i][j] == newBoard[i][j] {
+			oldCell := oldBoard[i][j]
+			newCell := newBoard[i][j]
+
+			if oldCell == newCell {
 				continue
-			} else if oldBoard[i][j] != newBoard[i][j] && !isEdited {
-				if !isValidMove(oldBoard, i, j) {
-					return false, errors.New("Неправильный ход: клетка уже занята")
-				}
-				isEdited = true
-			} else if oldBoard[i][j] != newBoard[i][j] && isEdited {
-				if !isValidMove(oldBoard, i, j) {
-					return false, errors.New("Неправильный ход: клетка уже занята")
-				}
-				return false, errors.New("Неправильный ход: можно изменить только одну клетку за раз")
+			}
+
+			diffCount++
+			if diffCount > 1 {
+				return errors.New("неправильный ход: можно изменить только одну клетку за раз")
+			}
+			if oldCell != CellEmpty {
+				return errors.New("неправильный ход: нельзя изменять уже занятую клетку")
+			}
+			if newCell != CellX {
+				return errors.New("неправильный ход: игрок может ходить только крестиком (X)")
 			}
 		}
 	}
-	return true, nil
-}
 
-func (s *Service) IsFinished(board Board) bool {
-	if checkWin(board, CellX) || checkWin(board, CellO) || isBoardFull(board) {
-		return true
+	if diffCount == 0 {
+		return errors.New("вы не сделали ход: доска не изменилась")
 	}
-	return false
+
+	return nil
 }
 
 func checkWin(board Board, player Cell) bool {

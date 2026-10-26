@@ -1,9 +1,12 @@
 package datasource
 
-import "tictactoe/internal/domain"
+import (
+	"encoding/json"
+	"tictactoe/internal/domain"
+)
 
 type Game struct {
-	UUID   string
-	Board  domain.Board
-	Status domain.GameStatus
+	UUID   string            `db:"uuid"`
+	Board  json.RawMessage   `db:"board"`
+	Status domain.GameStatus `db:"status"`
 }

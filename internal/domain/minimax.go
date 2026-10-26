@@ -45,7 +45,7 @@ func minimax(board Board, depth int, isMaximizing bool) int {
 
 }
 
-func (s *Service) FindBestMove(board Board) (int, int) {
+func findBestMove(board Board) (int, int) {
 	bestScore := -1000
 	bestMove := [2]int{-1, -1}
 
@@ -64,4 +64,13 @@ func (s *Service) FindBestMove(board Board) (int, int) {
 		}
 	}
 	return bestMove[0], bestMove[1]
+}
+
+func makeRobotMove(game *Game) {
+	row, col := findBestMove(game.Board)
+	if row == -1 || col == -1 {
+		return
+	}
+	game.Board[row][col] = CellO
+	updateGameStatus(game)
 }

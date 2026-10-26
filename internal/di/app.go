@@ -14,7 +14,8 @@ import (
 
 var Module = fx.Options(
 	fx.Provide(
-		datasource.NewStorage,
+		datasource.NewDatabase,
+		datasource.NewConfig,
 		datasource.NewGameRepository,
 		domain.NewService,
 		web.NewGameHandler,

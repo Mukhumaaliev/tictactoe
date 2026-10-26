@@ -1,29 +1,42 @@
 package datasource
 
 import (
+	"context"
+	"errors"
 	"tictactoe/internal/domain"
-	"uuid"
+
+	"github.com/jackc/pgx/v5"
 )
 
 type gameRepository struct {
-	storage *Storage
+	Database *Database
 }
 
-func (r *gameRepository) Save(g *domain.Game) {
-	game := DomainToDatasource(g)
-	r.storage.saveGame(game)
-}
-
-func (r *gameRepository) Get(uuid uuid.UUID) (*domain.Game, error) {
-	game, err := r.storage.getGame(uuid.String())
+func (r *gameRepository) Save(ctx context.Context, game *domain.Game) error {
+	gameModel, err := DomainToDatasource(game)
 	if err != nil {
-		return &domain.Game{}, err
+		return err
 	}
-	return DatasourceToDomain(game), nil
+	_, err = r.Database.pool.Exec(ctx, "INSERT INTO games (uuid, board, status) VALUES ($1, $2, $3) ON CONFLICT (uuid) DO UPDATE SET board = EXCLUDED.board, status = EXCLUDED.status", gameModel.UUID, gameModel.Board, gameModel.Status)
+	return err
 }
 
-func NewGameRepository(storage *Storage) domain.GameRepository {
+func (r *gameRepository) Get(ctx context.Context, uuid string) (*domain.Game, error) {
+
+	row := r.Database.pool.QueryRow(ctx, "SELECT uuid, board, status FROM games WHERE uuid=$1", uuid)
+	var game Game
+	err := row.Scan(&game.UUID, &game.Board, &game.Status)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, errors.New("Игра с таким UUID не найдена")
+		}
+		return nil, err
+	}
+	return DatasourceToDomain(&game)
+}
+
+func NewGameRepository(database *Database) domain.GameRepository {
 	return &gameRepository{
-		storage: storage,
+		Database: database,
 	}
 }

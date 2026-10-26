@@ -7,8 +7,3 @@ type Game struct {
 	Board  domain.Board      `json:"board"`
 	Status domain.GameStatus `json:"status"`
 }
-
-type Move struct {
-	Row int `json:"row"`
-	Col int `json:"col"`
-}
